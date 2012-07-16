@@ -7,12 +7,12 @@ c = (6, 6, 4, 12, 7, 3, 5, 2, 2, 5)
 
 mat = [ (5, 3, 9, 2, 6, 4, 1, 1, 8, 6)  ]   
 
-b = (100.0, 600.0, 300.0)
+b = (30.0, 600.0, 300.0)
 
 #problem definition
 beginModel('basic')
 verbose(True)
-x = var(xid, 'X') #create variables
+x = var(xid, 'X', bool) #create variables
 
 # Funzione di massimo 
 maximize( #set objective
@@ -37,9 +37,9 @@ print "Solver status:", status()
 print 'Z = %g;' % vobj()  # print obj value
 #Print variable names and primal values
 print ';\n'.join('%s = %g {dual: %g}' % (
-	   x[i].name, x[i].primal, x[i].dual) 
+	   x[i].name, x[i].primal, 10) 
 	                       for i in xid)
 print ';\n'.join('%s = %g {dual: %g}' % (
-	   r[i].name, r[i].primal, r[i].dual) 
+	   r[i].name, r[i].primal, 10) 
 	                       for i in rid)
 
