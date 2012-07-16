@@ -1,28 +1,35 @@
 from pymprog import *  # Import the module
+
 # index and data
-xid, rid = range(3), range(1)
-c = (6, 6, 4)
-mat = [ (5.0, 3.0, 9.0)     
-		  ]   
+xid, rid = range(10), range(1)
+
+c = (6, 6, 4, 12, 7, 3, 5, 2, 2, 5) 
+
+mat = [ (5, 3, 9, 2, 6, 4, 1, 1, 8, 6)  ]   
+
 b = (100.0, 600.0, 300.0)
+
 #problem definition
-beginModel('basic')  
+beginModel('basic')
 verbose(True)
 x = var(xid, 'X') #create variables
+
+# Funzione di massimo 
 maximize( #set objective
   sum(c[i]*x[i] for i in xid), 'myobj'
 )
 
-print 'xid' 
-print xid
-print 'x' 
-print x
-print 'c' 
-print c
+#print 'xid' 
+#print xid
+#print 'x' 
+#print x
+#print 'c' 
+#print c
 
-r=st( #set constraints
-		  sum(x[j]*mat[i][j] for j in xid) <= b[i] for i in rid
-		  )
+r=st(	#set constraints
+	sum(x[j]*mat[i][j] for j in xid) <= b[i] for i in rid
+  )
+
 solve() #solve and report
 
 
