@@ -49,6 +49,8 @@ track_3 = (	0, 0, 1, 0,
 		0, 1, 0, 0,  
 		0, 1, 0, 0)
 
+myTracks = [track_1, track_2, track_3 ]
+
 print 'Track_3:'
 print_matrix(track_3)
 
@@ -87,26 +89,33 @@ Y = var(yid, 'Y', bool) 	# First sub-pattern
 W = var(wid, 'W', bool) 	# Second sub-pattenr
 Vol = var(range(2), 'Vol', int) 	# Second sub-pattenr
 
-# Questa F e' una variabile temporanea, ha N*2 componenti. i primi N sono per il pattern Y, mentre i secondi sono
-# per il pattern W.
-# Ognuno di questi N valori corrisponde all' ampiezza (apporto sul volume) per quel layer, di quel pattern.  
+# AY e AW sono variabili temporanee. 
+# Ognuno di queste ha N valori corrisponde all' ampiezza (apporto sul volume) per quel layer, di quel pattern.  
+# TODO riscrivere meglio
 AY = var(fid, 'AY', int) 
 AW = var(fid, 'AW', int)
 
 print 'Print AW:'
 print AW
     
-r = st	(   #set constraints
-	sum( Y[(i*N)+j] for j in mRange ) - AY[i]   == 0 for i in nRange
-	)
+# AY    
+r = st	( sum( Y[(i*N)+j] for j in mRange ) - AY[i]   == 0 for i in nRange )
 
-r += st	(   #set constraints
-	sum( W[(i*N)+j] for j in mRange ) - AW[i]   == 0 for i in nRange
-	)
+# AW
+r += st	( sum( W[(i*N)+j] for j in mRange ) - AW[i]   == 0 for i in nRange )
 
-r += st	(   #set constraints
-	sum( Y[(i)] for j in mRange ) - AW[i]   == 0 for i in nRange
-	)
+
+
+# Vogliamo controllare che Y e W abbiano lo stesso coverage di P, quindi che 
+
+# Per ogni traccia che cade nel pattern ci sia un sub-pattern che la becchi tutta, quindi che abbia tutti i suoi punti
+
+covY = var(range(3), 'covY', bool) 
+covW = var(range(3), 'covW', bool)
+
+
+# La somma del prodotto dei punti dovra
+r += st	( sum( Y[i*N+j]*myTracks[k][i*N+j] for i in nRange for j in mRange ) + covY[k] *4 == 4  for k in range(3)	)
 
 
 # Qui' calcolo il volume
@@ -117,22 +126,18 @@ r += st	(   #set constraints
 	# reduce( operator.mul, list( AY[i] for i in range(N)) ) - Vol[i]   == 0 for i in range(2)
 	)
 
+# Funzione obiettivo, di minimizzazione quindi
 minimize(Vol[0] + Vol[1] , 'Total Volume')
 
 
 sys.stdout.write("\nSolving ...")
 solve()
-sys.stdout.write("done.\n\n")
+sys.stdout.write(" done.\n\n")
+
 
 print("Total Volume = %g"%vobj())
 
 
-# Vogliamo controllare che Y e W abbiano lo stesso coverage di P, quindi che 
 
-# Vogliamo calcolare il volume di Y e di W
 
-#Fi = somma (Yj) 		# per ogni j del vettore orizzontale (layer)   - Fj indica la componente del volume nel layer j - F ha due vettori, uno per Y e uno per W
-#Vj = produttoria( Fi )   	# Per Y e W
-
-#somma(Yi + Wi) = x      	# for every i 0..16
 
