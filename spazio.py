@@ -1,3 +1,12 @@
+## TODO : 
+## - devo riuscire a fare il coverage, ovvero a riuscire a capire come controllare che uno dei due sub-pattern 
+## - devo riuscire anche a fare il volume
+##
+## NOZIONI : 
+## - in generale ho un vettore di variabili x. Il problema di ottimizzazione P è del tipo
+##  min { c(x) | Ax<= b }   dove A e b sono vettori di numeri reali
+##
+
 def print_matrix( tracks ):
 	print "%s%s%s%s\n%s%s%s%s\n%s%s%s%s\n%s%s%s%s" % ( 
 		croce(tracks[0]), croce(tracks[1]), croce(tracks[2]), croce(tracks[3]), 
@@ -95,7 +104,7 @@ Vol = var(range(2), 'Vol', int) 	# Second sub-pattenr
 AY = var(fid, 'AY', int) 
 AW = var(fid, 'AW', int)
 
-print 'Print AW:'
+print 'Print AW : ' 
 print AW
     
 # AY    
@@ -108,28 +117,38 @@ r += st	( sum( W[(i*N)+j] for j in mRange ) - AW[i]   == 0 for i in nRange )
 
 # Vogliamo controllare che Y e W abbiano lo stesso coverage di P, quindi che 
 # Per ogni traccia che cade nel pattern ci sia un sub-pattern che la becchi tutta, quindi che abbia tutti i suoi punti
-
+#
 # CovY[k] sara' 1 se il sub-pattern Y riconosce la traccia k. Sara' 0 altrimenti 
 
 coveredY = var(range(3), 'covY', bool) 
 
-r+=st( sum( Y[i*N+j]*myTracks[k][i*N+j] for i in nRange for j in mRange ) + coveredY[k] *4 == 4 for k in range(3) )
+r+=st( sum( myTracks[k][i*N+j] * ( myTracks[k][i*N+j] - Y[i*N+j])  for i in nRange for j in mRange ) == coveredY[k]  for k in range(3) )
+
 
 # CovW[k] sara' 1 se il sub-pattern W riconosce la traccia k. Sara' 0 altrimenti 
 
 coveredW = var(range(3), 'covW', bool)
 
-r+=st( sum( W[i*N+j]*myTracks[k][i*N+j] for i in nRange for j in mRange ) + coveredW[k] *4 == 4 for k in range(3) )
+r+=st(  sum( myTracks[k][i*N+j] * ( myTracks[k][i*N+j] - W[i*N+j]) for i in nRange for j in mRange ) == coveredW[k]  for k in range(3) )
 
-coveredSubTot = var(range(3), 'covSubTot', bool)
+# TODO qui ora dovrei moltiplicarle per vedere se Una delle due è zero !!!
+
+
+#
+# # # # # # # 
+
 
 # Queste tre relazioni logiche impongono che per ogni traccia k, questa venga riconosciuta da almeno un sub-pattern 
 # e traducono la relazione 
 #   coveredSubTot[k] = coveredY[k] V coveredW[k]     |  k = {1,2,3} 
+#
+coveredSubTot = var(range(3), 'covSubTot', bool)
+
 r+=st( coveredSubTot[k] >= coveredY[k]  for k in range(3) )
 r+=st( coveredSubTot[k] >= coveredW[k]  for k in range(3) )
 r+=st( coveredSubTot[k] <= coveredY[k] + coveredW[k]  for k in range(3) )
-
+#
+# # # # # # #
 
 
 
@@ -140,6 +159,7 @@ r += st	(   #set constraints
 	# Questo qui' sotto funzionerebbe, ovvero, il reduce funziona bene, ma non e' supporato dal lambda generale
 	# reduce( operator.mul, list( AY[i] for i in range(N)) ) - Vol[i]   == 0 for i in range(2)
 	)
+
 
 # Funzione obiettivo, di minimizzazione quindi
 minimize(Vol[0] + Vol[1] , 'Total Volume')
