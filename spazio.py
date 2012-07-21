@@ -107,15 +107,30 @@ r += st	( sum( W[(i*N)+j] for j in mRange ) - AW[i]   == 0 for i in nRange )
 
 
 # Vogliamo controllare che Y e W abbiano lo stesso coverage di P, quindi che 
-
 # Per ogni traccia che cade nel pattern ci sia un sub-pattern che la becchi tutta, quindi che abbia tutti i suoi punti
 
-covY = var(range(3), 'covY', bool) 
-covW = var(range(3), 'covW', bool)
+# CovY[k] sara' 1 se il sub-pattern Y riconosce la traccia k. Sara' 0 altrimenti 
+
+coveredY = var(range(3), 'covY', bool) 
+
+r+=st( sum( Y[i*N+j]*myTracks[k][i*N+j] for i in nRange for j in mRange ) + coveredY[k] *4 == 4 for k in range(3) )
+
+# CovW[k] sara' 1 se il sub-pattern W riconosce la traccia k. Sara' 0 altrimenti 
+
+coveredW = var(range(3), 'covW', bool)
+
+r+=st( sum( W[i*N+j]*myTracks[k][i*N+j] for i in nRange for j in mRange ) + coveredW[k] *4 == 4 for k in range(3) )
+
+coveredSubTot = var(range(3), 'covSubTot', bool)
+
+# Queste tre relazioni logiche impongono che per ogni traccia k, questa venga riconosciuta da almeno un sub-pattern 
+# e traducono la relazione 
+#   coveredSubTot[k] = coveredY[k] V coveredW[k]     |  k = {1,2,3} 
+r+=st( coveredSubTot[k] >= coveredY[k]  for k in range(3) )
+r+=st( coveredSubTot[k] >= coveredW[k]  for k in range(3) )
+r+=st( coveredSubTot[k] <= coveredY[k] + coveredW[k]  for k in range(3) )
 
 
-# La somma del prodotto dei punti dovra
-r += st	( sum( Y[i*N+j]*myTracks[k][i*N+j] for i in nRange for j in mRange ) + covY[k] *4 == 4  for k in range(3)	)
 
 
 # Qui' calcolo il volume
