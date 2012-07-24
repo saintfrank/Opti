@@ -27,12 +27,21 @@ def print_matrix( tracks ):
 		croce(tracks[8]),  croce(tracks[9]),  croce(tracks[10]), croce(tracks[11]), 
 		croce(tracks[12]), croce(tracks[13]), croce(tracks[14]), croce(tracks[15]) )
 
+def print_variables( tracks ):
+    print"%s%s%s%s\n%s%s%s%s\n%s%s%s%s\n%s%s%s%s" % ( 
+        croce(tracks[0].primal),  croce(tracks[1].primal),  croce(tracks[2].primal),  croce(tracks[3].primal), 
+        croce(tracks[4].primal),  croce(tracks[5].primal),  croce(tracks[6].primal),  croce(tracks[7].primal), 
+        croce(tracks[8].primal),  croce(tracks[9].primal),  croce(tracks[10].primal), croce(tracks[11].primal), 
+        croce(tracks[12].primal), croce(tracks[13].primal), croce(tracks[14].primal), croce(tracks[15].primal) )
+
 
 def croce( val ):
-	if val is 1:
-		return "x"
-	else:
-		return "_"
+    if val >= 1  :
+        return "x"
+    else:
+        return "_"
+
+
 
 tracks = (
 		1, 0, 1, 1, 
@@ -117,6 +126,26 @@ r+=st( covered[k] == 1  for k in range(3) )
 #
 # # # # # # #
 
+AY = var(range(N*M), 'AY', int) 
+AW = var(range(N*M), 'AW', int)
+
+## Ora voglio fare che *per ogni punto* nella griglia 2D,                                       
+r = st	(  AY[ i ] >= Y[k] * myTracks[k][ i ] for i in range(N*M)  for k in range(3) )
+r = st	(  AY[ i ] <= sum( Y[k] * myTracks[k][ i ]  for k in range(3)  )  for i in range(N*M)  )
+
+r = st	(  AW[ i ] >= W[k] * myTracks[k][ i ] for i in range(N*M)  for k in range(3) )
+r = st	(  AW[ i ] <= sum( W[k] * myTracks[k][ i ]  for k in range(3)  )  for i in range(N*M)  )
+
+# Le ampiezze nei vari layer ... poi si potra' semplificare
+AmpY = var(range(N), 'AmpY', int)
+AmpW = var(range(N), 'AmpW', int)
+
+
+r += st	(   sum(  AY[i*N+j] for j in mRange ) == AmpY[i] for i in nRange )
+r += st	(   sum(  AW[i*N+j] for j in mRange ) == AmpW[i] for i in nRange )
+
+
+
 
 
 ## AY e AW sono variabili temporanee. 
@@ -172,10 +201,18 @@ r+=st( covered[k] == 1  for k in range(3) )
 #
 #
 ## Funzione obiettivo, di minimizzazione quindi
-#
-minimize( (3 *Y[0]) + (20* Y[1]) + (2* Y[2]) + (10* W[0]) + (1* W[1]) + (7* W[2])   , 'Total Volume')
+#minimize( (3 *Y[0]) + (20* Y[1]) + (2* Y[2]) + (10* W[0]) + (1* W[1]) + (7* W[2])   , 'Total Volume')
 
-#minimize( (4 * Y[0]) + ( 5 * W[1])     , 'Total Volume')
+VolTotY = var(range(1), 'VolTotY', int)        # Second sub-pattenr
+VolTotW = var(range(1), 'VolTotW', int)        # Second sub-pattenr
+
+
+#r += st	(   sum(  AY[i*N+j] for j in mRange ) == AmpY[i] for i in nRange )
+r += st	(   sum(  AmpY[j] for j in nRange ) == VolTotY[i] for i in range(1) )
+r += st	(   sum(  AmpW[j] for j in nRange ) == VolTotW[i] for i in range(1) )
+
+
+minimize( VolTotY[0] + VolTotW[0]  , 'Total Volume')
 
 
 sys.stdout.write("\nSolving ...")
@@ -187,6 +224,17 @@ print("Total Volume = %g"%vobj())
 
 print Y 
 print W
+
+print AmpY
+print AmpW
+
+print AY
+print AW
+
+print_variables(AY)
+print_variables(AW)
+
+
 
 
 
