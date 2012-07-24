@@ -126,6 +126,12 @@ r+=st( covered[k] == 1  for k in range(3) )
 #
 # # # # # # #
 
+
+r=st( sum ( Y[k] for k in range(3) ) >= 1    )
+r=st( sum ( W[k] for k in range(3) ) >= 1   )
+
+
+
 AY = var(range(N*M), 'AY', int) 
 AW = var(range(N*M), 'AW', int)
 
