@@ -1,21 +1,11 @@
 from tools import *
 import pymprog      # Import the module
-
-## Ora, secondo me, non direi di farlo punto punto, ma traccia traccia. 
-## Allora prendo le variabili booleane Y[0], Y[1], Y[2], 
-##
-## Allora, per il coverage: sicurmente Y[0] + Y[1] + Y[2] + W[0] + W[1] + W[2] <= 3 al numero di coverage
-##
-## Metto che Y[0] + Y[1] + Y[2] > 0  
-##
-## E per calcolare il volume:
-## faccio semplice le somme, ma poi, certo, non posso fare il prodotto, ma la somma, ma almeno mi approssima
-##
-##
+import operator
+import sys
 
 
-## TODO : 
-## - devo riuscire a fare il coverage, ovvero a riuscire a capire come controllare che uno dei due sub-pattern 
+##
+## x [DONE] devo riuscire a fare il coverage, ovvero a riuscire a capire come controllare che uno dei due sub-pattern 
 ## - devo riuscire anche a fare il volume
 ##
 ## NOZIONI : 
@@ -24,12 +14,7 @@ import pymprog      # Import the module
 ##
 
 
-
 def split ( myTracks ):
-    
-    
-    import operator
-    import sys
     
     N = 4
     M = 4
@@ -71,9 +56,8 @@ def split ( myTracks ):
     
     r += pymprog.st( sum ( Y[k] for k in range(3) ) == totY[i] for i in range(1) )
     r += pymprog.st( sum ( W[k] for k in range(3) ) == totW[i] for i in range(1) )
-    
-    
-    
+
+
     AY = pymprog.var(range(N*M), 'AY', int) 
     AW = pymprog.var(range(N*M), 'AW', int)
     
@@ -109,9 +93,8 @@ def split ( myTracks ):
     pymprog.solve()
     sys.stdout.write(" done.\n\n")
     
-    
     print("Total Volume = %g"% pymprog.vobj())
-   
+
     print 'Y'
     print Y 
     print 'W'
@@ -136,6 +119,8 @@ def split ( myTracks ):
     print VolTotW[0].primal
     print 'Volume Tot : ' 
     print sum( tracks[i] for i in range(N*M) )
+
+    return (Y, W)
 
 
 
@@ -184,7 +169,7 @@ print_values_matrix(track_3)
 
 
 myTracks = [track_1, track_2, track_3 ]
-split(myTracks)
+(X, D) = split(myTracks)
 
 # Funzione di massimo
 

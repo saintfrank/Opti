@@ -1,19 +1,6 @@
 from tools import *
 import pymprog      # Import the module
 
-## Ora, secondo me, non direi di farlo punto punto, ma traccia traccia. 
-## Allora prendo le variabili booleane Y[0], Y[1], Y[2], 
-##
-## Allora, per il coverage: sicurmente Y[0] + Y[1] + Y[2] + W[0] + W[1] + W[2] <= 3 al numero di coverage
-##
-## Metto che Y[0] + Y[1] + Y[2] > 0  
-##
-## E per calcolare il volume:
-## faccio semplice le somme, ma poi, certo, non posso fare il prodotto, ma la somma, ma almeno mi approssima
-##
-##
-
-
 ## TODO : 
 ## - devo riuscire a fare il coverage, ovvero a riuscire a capire come controllare che uno dei due sub-pattern 
 ## - devo riuscire anche a fare il volume
@@ -25,9 +12,8 @@ import pymprog      # Import the module
 
 
 
-def split ( myTracks ):
-    
-    
+def merge ( Y, W ):
+        
     import operator
     import sys
     
@@ -36,9 +22,6 @@ def split ( myTracks ):
     
     # index and data
     patternid, yid, wid, rid = range(N*M), range(N*M), range(N*M), range(2)
-    fid = range(N) # WARNING occhio che questo lo usero' per due variabili, non dovrebbe essere un problema 
-    nRange = range(N)
-    mRange = range(M) 
     
     #problem definition
     pymprog.beginModel('basic')
